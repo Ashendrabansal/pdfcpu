@@ -731,8 +731,13 @@ func parseFloat(s string) (types.Object, error) {
 		s = strings.Replace(s, ".-", ".", 1)
 		f, err = strconv.ParseFloat(s, 64)
 		if err != nil {
-			return nil, err
+			if strings.EqualFold(s, "#NAN") {
+				// on NAN don't fail and gracefully accept 0 as we don't know
+				// how to handle the failure
+				return types.Float(0), nil
+			}
 		}
+		return nil, err
 	}
 
 	if log.ParseEnabled() {
